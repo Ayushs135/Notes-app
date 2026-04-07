@@ -3,8 +3,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
-conn = MongoClient(REMOVED)
+load_dotenv()
+conn = MongoClient(os.getenv("MONGO_URL"))
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
