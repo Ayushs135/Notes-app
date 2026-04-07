@@ -5,7 +5,7 @@ from schemas.note import noteEntity, notesEntity
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-
+from fastapi.responses import RedirectResponse
 
 note = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -22,11 +22,14 @@ async def home(request: Request):
 @note.post("/")
 async def addnote(request: Request):
     form = await request.form()
-    form_dict = dict(form)
-    important = form.get("important")
-    if important == "on":
-        important = True
-    else:
-        important = False
-    conn.notes.notes.insert_one(form_dict)
-    return {"Success": "Note added successfully"}
+
+    note_data = {
+        "title": form.get("title"),
+        "desc": form.get("desc"),
+        "important": True if form.get("important") == "on" else False
+    }
+
+    conn.notes.notes.insert_one(note_data)
+
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse("/", status_code=303)
